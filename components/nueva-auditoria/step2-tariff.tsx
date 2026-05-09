@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
@@ -25,21 +25,23 @@ export function Step2Tariff({ uploadData, onDone, onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
+  const calledRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
+    if (calledRef.current) return;
+    calledRef.current = true;
+
     async function run() {
       try {
         const res = await api.auditInvoice(uploadData.invoiceId);
-        if (!cancelled) setAuditResult(res);
+        setAuditResult(res);
       } catch (e: unknown) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Error al auditar");
+        setError(e instanceof Error ? e.message : "Error al auditar");
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
     }
     run();
-    return () => { cancelled = true; };
   }, [uploadData.invoiceId]);
 
   if (loading) {

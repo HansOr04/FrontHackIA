@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScoreGauge } from "@/components/ui/score-gauge";
@@ -32,30 +32,30 @@ export function Step3Report({ uploadData, auditResult, onBack }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const calledRef = useRef(false);
 
   const { addAudit } = useAuditHistory();
   const router = useRouter();
 
   useEffect(() => {
-    let cancelled = false;
+    if (calledRef.current) return;
+    calledRef.current = true;
+
     async function run() {
       try {
         const [just, rep] = await Promise.all([
           api.justifyInvoice(uploadData.invoiceId),
           api.generateReport(uploadData.invoiceId),
         ]);
-        if (!cancelled) {
-          setJustification(just);
-          setReport(rep);
-        }
+        setJustification(just);
+        setReport(rep);
       } catch (e: unknown) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Error al generar el reporte");
+        setError(e instanceof Error ? e.message : "Error al generar el reporte");
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       }
     }
     run();
-    return () => { cancelled = true; };
   }, [uploadData.invoiceId]);
 
   async function handleConfirm() {

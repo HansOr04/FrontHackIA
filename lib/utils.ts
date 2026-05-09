@@ -28,7 +28,8 @@ export function formatDate(iso: string): string {
 }
 
 export function formatClaimId(claimId: number): string {
-  return `#FAC-${String(claimId).padStart(4, "0")}`;
+  const shortId = String(claimId).slice(-4).padStart(4, "0");
+  return `#SIN-${shortId}`;
 }
 
 export function lineStatusLabel(status: LineStatus): string {
