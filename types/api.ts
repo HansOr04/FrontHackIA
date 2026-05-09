@@ -67,6 +67,13 @@ export interface JustificationResultResponse {
   totalUnjustified: number;
 }
 
+export interface TariffUploadResponse {
+  filename: string;
+  chunksIndexed: number;
+  message: string;
+  error?: string;
+}
+
 export interface AuditHistoryItem {
   invoiceId: number;
   claimId: number;

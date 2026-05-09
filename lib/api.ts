@@ -3,6 +3,7 @@ import type {
   AuditResultResponse,
   InvoiceUploadResponse,
   JustificationResultResponse,
+  TariffUploadResponse,
 } from "@/types/api";
 import { getStoredToken } from "@/context/auth-context";
 
@@ -68,5 +69,18 @@ export const api = {
     return request<AuditReportResponse>(
       `${BASE}/audit/invoice/${invoiceId}/report`
     );
+  },
+
+  listTariffs(): Promise<string[]> {
+    return request<string[]>(`${BASE}/tariff/list`);
+  },
+
+  uploadTariff(file: File): Promise<TariffUploadResponse> {
+    const form = new FormData();
+    form.append("file", file);
+    return request<TariffUploadResponse>(`${BASE}/tariff/upload`, {
+      method: "POST",
+      body: form,
+    });
   },
 };
